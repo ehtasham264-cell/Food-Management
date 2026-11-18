@@ -1,9 +1,18 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-local-development-only-key")
+
+load_dotenv(BASE_DIR / ".env")
+
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-local-development-only-key"
+)
+
+DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
 # Set VERCEL=1 automatically in the Vercel project environment.
@@ -51,9 +60,7 @@ TEMPLATES = [{
 
 WSGI_APPLICATION = "foodwaste.wsgi.application"
 
-# SQLite is suitable for local development only. On Vercel, configure DATABASE_URL
-# with a managed PostgreSQL database (for example Neon) because serverless filesystems
-# are ephemeral and cannot safely hold your production database.
+
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
     try:
@@ -77,8 +84,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Vercel runs collectstatic at build time and serves these files via its CDN.
-# WhiteNoise is used for local production-like runs and as a fallback.
+
 if not ON_VERCEL:
     try:
         import whitenoise  # noqa: F401
@@ -92,7 +98,7 @@ if not ON_VERCEL:
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Basic production security settings.
+
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = ON_VERCEL
